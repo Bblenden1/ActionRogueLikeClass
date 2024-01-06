@@ -14,6 +14,11 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -22,7 +27,7 @@ protected:
 
 	//UPROPERTY is a keyword that allows for the component to be visible to the properties section
 	UPROPERTY(VisibleAnywhere)
-	//Springarm allows for the camera to push in if colliding with a wall
+	//Spring arm allows for the camera to push in if colliding with a wall
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
@@ -33,6 +38,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	void MoveForward(float Value);
+	void MoveRight(float Value);
+
+	void PrimaryAttack();
 
 public:	
 	// Called every frame
