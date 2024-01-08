@@ -2,6 +2,7 @@
 
 
 #include "SExplosiveBarrel.h"
+#include "SCharacter.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -10,24 +11,33 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BarrelMesh = CreateDefaultSubobject<UStaticMeshComponent>("BarrelMesh");
+	BarrelMesh->SetSimulatePhysics(true);
+	RootComponent = BarrelMesh;
+
+	ForceComp = CreateDefaultSubobject<URadialForceComponent>("ForceComp");
+	ForceComp->SetupAttachment(BarrelMesh);
+
+	ForceComp->SetAutoActivate(false);
+	ForceComp->Radius = 750.0f;
+	ForceComp->ImpulseStrength = 2500.0f;
+	ForceComp->bImpulseVelChange = true;
+
+	ForceComp->AddCollisionChannelToAffect(ECC_WorldDynamic);
 
 }
 
-// Called when the game starts or when spawned
-void ASExplosiveBarrel::BeginPlay()
+
+void ASExplosiveBarrel::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+
+	BarrelMesh->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnActorHit);
+
 }
 
-void ASExplosiveBarrel::OnComponentHit()
+void ASExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	ForceComp->FireImpulse();
 }
 
-// Called every frame
-void ASExplosiveBarrel::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
